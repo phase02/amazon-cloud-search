@@ -1,0 +1,95 @@
+To be indexed by Amazon CloudSearch, the data must be formatted in either
+JSON or XML. The Amazon CloudSearch console can automatically convert the following file types to
+the required JSON or XML format:
+• Comma Separated Value (.csv)
+• Adobe Portable Document Format (.pdf)
+• HTML (.htm, .html)
+• Microsoft Excel (.xls, .xlsx)
+• Microsoft PowerPoint (.ppt, .pptx)
+• Microsoft Word (.doc, .docx)
+• Text Documents (.txt)
+
+
+
+
+When you upload a CSV file, Amazon CloudSearch parses each row separately. The first row defines
+the document fields, and each subsequent row becomes a separate document. For all other file types
+Amazon CloudSearch creates a single document and the contents of the file are mapped to a single text
+field. If metadata is available for the file, the metadata is mapped to corresponding document fields—the
+fields generated from the document metadata vary depending on the file type.
+
+
+Search Your Amazon CloudSearch Domain
+You can use the search tester in the Amazon CloudSearch console to submit sample search requests
+and view the results.You can also submit sample search requests through a Web browser or using cURL.
+In your application, you can use any HTTP library to send search traffic to your Amazon CloudSearch
+domain.
+
+Searching with the Search Tester
+The search tester in the Amazon CloudSearch console enables you to submit sample search requests
+using any of the supported query parsers: simple, structured, lucene, or dismax. By default, requests are
+processed with the simple query parser.
+
+
+simple : search all text and text-array fields for the specified string. search for phrases, individual terms, and prefixes.
+structured : search specific fields, construct compound queries using Boolean operators, and use advanced features such as term boosting and proximity searching.
+lucene : specify search criteria using the Apache Lucene query parser syntax.
+dismax : specify search criteria using the simplified subset of the Apache Lucene query parser syntax defined by the DisMax query parser.
+
+https://lucene.apache.org/core/2_9_4/queryparsersyntax.html (for our reference)
+
+Submitting Search Requests from a Web Browser
+
+By default, Amazon CloudSearch returns the response in JSON.You can also get the search results
+formatted in XML by specifying the format parameter, format=xml
+
+Searching Numeric Fields
+use the structured query syntax, q.parser=structured
+• year:2000 matches documents whose year field contains the value 2000.
+• year:[2000,} matches documents whose year field contains a value greater than or equal to 2000
+• year:{,2000] matches documents whose year field contains a value less than or equal to 2000
+• year:[2000,2011] matches documents whose year field contains a value between 2000 and 2011,
+inclusive.
+• year:{2000,2011} matches documents whose year field contains a value between 2000 and 2011,
+exclusive.
+
+release_date:['2000-01-01T00:00:00Z','2011-01-01T00:00:00Z'].
+
+For example, the following structured query searches for "star" in the title field, finds all of the matching
+movies that were released before 2000, and returns the title, year, and relevance score for each one:
+q=(and title:'star' year:{,2000])&q.parser=structured&return=title,year,_score
+
+
+the result for the above query returned in JSON
+
+{
+"status": {
+"rid": "hLPckLsoEQoELQo=",
+"time-ms": 2
+},
+"hits": {
+"found": 15,
+"start": 0,
+"hit": [
+{
+"id": "tt0076759",
+"fields": {
+"title": "Star Wars",
+"year": "1977",
+"_score": "5.7601414"
+}
+},
+.
+.
+.
+{
+"id": "tt0088170",
+"fields": {
+"title": "Star Trek III: The Search for Spock",
+"year": "1984",
+"_score": "4.2371693"
+}
+}
+]
+}
+}
